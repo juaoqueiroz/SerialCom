@@ -1,4 +1,4 @@
-#include "serialcom.h"
+#include <Conta.h>
 #include <iostream>
 
 int main()

@@ -1,5 +1,5 @@
 
-#include "serialcom.h"
+#include "Conta.h"
 
 void Conta::inicializa(string n, float s)
 {
