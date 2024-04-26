@@ -1,60 +1,55 @@
 #include <Arduino.h>
 #include <iostream>
+byte set2000[] = {0xA5, 0xC3, 0xD0, 0x07, 0xC1};
+byte set2000_inv[sizeof(set2000)];
 
+byte set3500[] = {0xA5, 0xC3, 0x0D, 0xAC, 0x29};
+byte set3500_inv[sizeof(set3500)];
 
-/*/ put function declarations here:
-int myFunction(int, int);
+byte set0[] = {0xA5, 0xC3, 0x00, 0x00, 0x95};
+byte set0_inv[sizeof(set0)];
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
-  Serial.begin(600);
+  Serial.begin(600); // Inicializa a comunicação serial com uma taxa de 600 bps
+  // Inverte cada byte individualmente
+  for (int i = 0; i < sizeof(set2000); i++) {
+    set2000_inv[i] = ~set2000[i]; // Inverte os bits do byte
+    set3500_inv[i] = ~set3500[i]; // Inverte os bits do byte
+    set0_inv[i] = ~set0[i]; // Inverte os bits do byte
+  }
+
 
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  std::cout << Serial.available();
-}
+  // Envia os bytes invertidos via serial
+  std::cout << "Setando para 3500" << std::endl;
+  Serial.write(set3500_inv, sizeof(set3500_inv));
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
-}
-*/
 
-void setup() {
-  // Inicializa a comunicação serial com uma taxa de transmissão de 115200 bps
-  Serial.begin(115200);
-}
-
-void loop() {
-  static String mensagemRecebida = ""; // Variável para armazenar a mensagem recebida
-  static bool aguardandoEntrada = false; // Variável para controlar se estamos aguardando uma entrada
-  
-  // Se houver dados disponíveis para leitura do Serial Monitor
-  if (Serial.available() > 0) {
-    char caractere = Serial.read(); // Lê o próximo caractere recebido
+if (Serial.available() > 0) {
+    // Lê o byte recebido
+    byte dado = Serial.read();
     
-    // Se o caractere recebido for uma nova linha ('\n'), indica que o usuário pressionou "Enter"
-    if (caractere == '\n') {
-      // Imprime a mensagem recebida no Serial Monitor
-      Serial.print("Mensagem recebida: ");
-      Serial.println(mensagemRecebida);
-      
-      // Limpa a variável de mensagem recebida
-      mensagemRecebida = "";
-      
-      // Indica que não estamos mais aguardando uma entrada
-      aguardandoEntrada = false;  
-    } else {
-      // Adiciona o caractere recebido à mensagem
-      mensagemRecebida += caractere;
-      
-      // Indica que estamos aguardando uma entrada
-      aguardandoEntrada = true;
-    }
+    // Faz o que você quer com o dado lido, por exemplo, imprimir na porta serial
+    Serial.println(dado, HEX); // Imprime o dado em hexadecimal
+  }else{
+    
+    std::cout << "Nenhum dado disponível" << std::endl;
   }
   
-  // Outras operações do loop
+  delay(2000); // Espera 2 segundos
+  
+  std::cout << "Esperando 10 segundos" << std::endl;
+  delay(10000); // Espera 10 segundos 
+  
+  std::cout << "Setando para 0" << std::endl;
+  Serial.write(set3500_inv, sizeof(set3500_inv));
+ 
+  delay(2000); // Espera 2 segundos
+
+  std::cout << "Esperando 10 segundos" << std::endl;
+  delay(10000); // Espera 10 segundos 
 }
+
+
